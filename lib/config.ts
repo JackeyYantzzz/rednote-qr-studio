@@ -12,8 +12,11 @@ const publicEnvSchema = z.object({
 });
 
 const serverEnvSchema = publicEnvSchema.extend({
-  OPENAI_API_KEY: z.string().min(20).optional().or(z.literal("")),
-  OPENAI_MODEL: z.preprocess(blankAsUndefined, z.string().min(1).default("gpt-5.6")),
+  DEEPSEEK_API_KEY: z.string().min(20).optional().or(z.literal("")),
+  DEEPSEEK_MODEL: z.preprocess(
+    blankAsUndefined,
+    z.string().min(1).default("deepseek-chat"),
+  ),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20).optional().or(z.literal("")),
   ADMIN_EMAIL: z.string().email().optional().or(z.literal("")),
   DEMO_MODE: z.preprocess(blankAsUndefined, z.enum(["true", "false"]).default("false")),

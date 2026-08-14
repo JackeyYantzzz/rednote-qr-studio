@@ -114,7 +114,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 | 变量 | 用途 |
 |---|---|
-| `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL` | 服务端内容生成；模型默认使用 `deepseek-chat` |
+| `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL` | 服务端内容生成；模型默认使用 `deepseek-v4-flash` |
 | `NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_ANON_KEY` | 浏览器和服务端访问 Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | 仅服务端使用的 Supabase 管理密钥 |
 | `NEXT_PUBLIC_SITE_URL` | 二维码使用的网站基址；本地默认 `http://localhost:3000` |

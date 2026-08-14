@@ -1,0 +1,60 @@
+# Dependencies and package-manager caches
+/node_modules/
+/.pnpm-store/
+/.pnp
+.pnp.*
+.npm/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Build output and caches
+/.next/
+/.vinext/
+/out/
+/dist/
+/coverage/
+/.wrangler/
+/.turbo/
+/.cache/
+/outputs/
+/work/
+*.tsbuildinfo
+
+# Local environment files (keep blank templates only)
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Credentials and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+.npmrc
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+# Logs and local runtime state
+*.log
+*.pid
+.dev-server.pid
+
+# Deployment-provider state
+.vercel/
+
+# OS/editor metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Generated framework declarations
+next-env.d.ts

@@ -1,0 +1,55 @@
+{
+  "name": "rednote-qr-studio",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "vinext start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest --config vitest.config.ts --configLoader runner run",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern coverage",
+    "phone": "powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/start-phone-preview.ps1",
+    "worker": "tsx worker/index.ts",
+    "worker:once": "tsx worker/index.ts --once"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.0.0",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.57.0",
+    "dotenv": "^17.2.0",
+    "file-type": "^21.0.0",
+    "lucide-react": "^0.468.0",
+    "next": "16.2.6",
+    "openai": "^6.18.0",
+    "qrcode": "^1.5.4",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "tsx": "^4.20.0",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.0.13",
+    "vitest": "^3.2.0",
+    "wrangler": "4.92.0"
+  },
+  "type": "module"
+}

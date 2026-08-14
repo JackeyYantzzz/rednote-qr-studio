@@ -1,7 +1,6 @@
 import "server-only";
 
 import OpenAI from "openai";
-import { zodTextFormat } from "openai/helpers/zod";
 import { getServerEnv, isDemoMode } from "@/lib/config";
 import { generateDemoPost } from "@/lib/demo-data";
 import { generatedPostSchema, type GenerateRequest } from "@/lib/schemas";
@@ -11,7 +10,7 @@ import type { Asset, Campaign, GeneratedPost } from "@/types/database";
 function buildPrompt(campaign: Campaign, assets: Asset[], input: GenerateRequest) {
   return JSON.stringify(
     {
-      task: "为普通用户生成一篇可编辑、可复制的小红书帖子草稿。",
+      task: "为普通用户生成一篇可编辑、可复制的小红书帖子草稿，并只返回 JSON。",
       campaign: {
         brandName: campaign.brand_name,
         productName: campaign.product_name,
@@ -37,6 +36,13 @@ function buildPrompt(campaign: Campaign, assets: Asset[], input: GenerateRequest
         "标签中不要包含 #，fullPost 中需要自动组合 #标签。",
         "提供恰好 3 个不同标题，selectedTitle 必须等于其中一个。",
       ],
+      outputFormat: {
+        titleOptions: ["标题一", "标题二", "标题三"],
+        selectedTitle: "标题一",
+        body: "正文",
+        tags: ["标签一", "标签二", "标签三"],
+        fullPost: "标题一\n\n正文\n\n#标签一 #标签二 #标签三",
+      },
     },
     null,
     2,
@@ -49,33 +55,49 @@ export async function generatePostWithAI(
   input: GenerateRequest,
 ): Promise<GeneratedPost> {
   const env = getServerEnv();
-  if (!env.OPENAI_API_KEY) {
+  if (!env.DEEPSEEK_API_KEY) {
     if (isDemoMode()) {
       return normalizeGeneratedPost(generateDemoPost(campaign, input, assets));
     }
-    throw new Error("OPENAI_API_KEY is not configured.");
+    throw new Error("DEEPSEEK_API_KEY is not configured.");
   }
 
-  const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
-  const response = await openai.responses.parse({
-    model: env.OPENAI_MODEL,
+  const deepseek = new OpenAI({
+    apiKey: env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
+  const response = await deepseek.chat.completions.create({
+    model: env.DEEPSEEK_MODEL,
     store: false,
-    input: [
+    stream: false,
+    max_tokens: 2400,
+    temperature: 0.7,
+    response_format: { type: "json_object" },
+    messages: [
       {
         role: "system",
         content:
-          "你是品牌内容编辑。严格基于给定事实写中文小红书草稿，并遵守所有合规约束。",
+          "你是品牌内容编辑。严格基于给定事实写中文小红书草稿，遵守所有合规约束，并只返回符合示例结构的 JSON 对象。",
       },
       { role: "user", content: buildPrompt(campaign, assets, input) },
     ],
-    text: {
-      format: zodTextFormat(generatedPostSchema, "generated_xiaohongshu_post"),
-    },
   });
 
-  if (!response.output_parsed) {
-    throw new Error("The model did not return a structured post.");
+  const content = response.choices[0]?.message.content?.trim();
+  if (!content) {
+    throw new Error("DeepSeek did not return any content.");
   }
-  const parsed = generatedPostSchema.parse(response.output_parsed);
+
+  let parsedJson: unknown;
+  try {
+    parsedJson = JSON.parse(content);
+  } catch {
+    throw new Error("DeepSeek returned invalid JSON.");
+  }
+
+  const parsed = generatedPostSchema.parse(parsedJson);
+  if (!parsed.titleOptions.includes(parsed.selectedTitle)) {
+    throw new Error("DeepSeek selected a title outside titleOptions.");
+  }
   return normalizeGeneratedPost(parsed as GeneratedPost);
 }

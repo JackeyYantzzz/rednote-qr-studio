@@ -15,14 +15,14 @@
 - 独立 Fast Publish 模式：管理员预设图片顺序与审核文案，扫码后一键交接
 - 普通/快发二维码切换，以及扫码、点击、完成、取消、失败统计
 - 移动端图片多选、预览、拖动/箭头排序、推荐组合
-- OpenAI Responses API + Zod Structured Outputs + 生成记录
+- DeepSeek Chat Completions API + JSON Output + Zod 校验 + 生成记录
 - 3 个标题、正文、标签、编辑与重新生成
 - 分项复制、完整帖子复制、逐张/全部保存、Web Share 和可靠降级
 - 管理员生成记录审核、默认仅自己可见的发布任务、公开发布二次确认
 - Supabase 原子领取（`FOR UPDATE SKIP LOCKED`）、重复任务保护和有限重试
 - Windows Worker 图片域名白名单、MIME/大小校验、临时文件清理、结构化日志、优雅退出
 - 官方 MCP TypeScript SDK 的 Streamable HTTP 客户端
-- 本地演示模式（没有 Supabase/OpenAI 密钥也能走完整普通用户流程）
+- 本地演示模式（没有 Supabase/DeepSeek 密钥也能走完整普通用户流程）
 
 ## 项目结构
 
@@ -54,7 +54,7 @@ Copy-Item .env.example .env.local
 pnpm.cmd dev
 ```
 
-请在新电脑上重新填写 `.env.local`；它和 `worker/.env` 都被 Git 忽略，不会随仓库迁移。Supabase、OpenAI、Sites 及 GitHub 的访问权限也需要在新电脑上单独登录或配置。
+请在新电脑上重新填写 `.env.local`；它和 `worker/.env` 都被 Git 忽略，不会随仓库迁移。Supabase、DeepSeek、Sites 及 GitHub 的访问权限也需要在新电脑上单独登录或配置。
 
 ## 1. 本地快速启动
 
@@ -106,7 +106,7 @@ DEMO_MODE=true
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-演示数据只在当前开发进程中保存；生产环境必须关闭 `DEMO_MODE` 并配置 Supabase。
+演示数据只在当前开发进程中保存；生产环境必须关闭 `DEMO_MODE` 并配置 Supabase。小型网站可以先用 Supabase Free 验证业务；正式对外营业时建议使用不会因闲置暂停并提供备份的生产方案。
 
 ## 2. 环境变量
 
@@ -114,7 +114,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 | 变量 | 用途 |
 |---|---|
-| `OPENAI_API_KEY`、`OPENAI_MODEL` | 服务端内容生成；模型默认使用 `gpt-5.6` |
+| `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL` | 服务端内容生成；模型默认使用 `deepseek-v4-flash` |
 | `NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_ANON_KEY` | 浏览器和服务端访问 Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | 仅服务端使用的 Supabase 管理密钥 |
 | `NEXT_PUBLIC_SITE_URL` | 二维码使用的网站基址；本地默认 `http://localhost:3000` |
@@ -127,11 +127,15 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 安全要求：
 
-- `OPENAI_API_KEY` 和 `SUPABASE_SERVICE_ROLE_KEY` 只放服务器环境，不能以 `NEXT_PUBLIC_` 开头。
+- `DEEPSEEK_API_KEY` 和 `SUPABASE_SERVICE_ROLE_KEY` 只放服务器环境，不能以 `NEXT_PUBLIC_` 开头。
 - 正式二维码必须使用稳定的 HTTPS 生产域名，不能使用 localhost 或 Preview URL。
 - 不要把 `.env.local`、`worker/.env`、Cookie 或 Token 提交到 Git。
 
-## 3. Supabase 初始化
+## 3. 适合小型商业网站的 Supabase 配置
+
+本项目继续使用 Supabase 提供数据库、图片存储和管理员登录，避免为了早期小流量业务再维护多套服务。试运营可从 Free 开始，并监控数据库、Storage 与流量额度；正式营业前建议升级到带持续运行和备份的生产方案。不要用 `DEMO_MODE` 承载真实客户数据。
+
+### Supabase 初始化
 
 1. 创建 Supabase 项目。
 2. 按文件名顺序运行 `supabase/migrations/` 下的 migration，或使用 Supabase CLI 执行 migration。

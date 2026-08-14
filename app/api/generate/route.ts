@@ -1,6 +1,6 @@
 import { generateRequestSchema } from "@/lib/schemas";
 import { checkRateLimit, requestKey } from "@/lib/rate-limit";
-import { generatePostWithAI } from "@/lib/server/openai";
+import { generatePostWithAI } from "@/lib/server/deepseek";
 import {
   getAssetsByIds,
   getCampaignBySlug,

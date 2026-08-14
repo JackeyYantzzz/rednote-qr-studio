@@ -15,7 +15,7 @@ const serverEnvSchema = publicEnvSchema.extend({
   DEEPSEEK_API_KEY: z.string().min(20).optional().or(z.literal("")),
   DEEPSEEK_MODEL: z.preprocess(
     blankAsUndefined,
-    z.string().min(1).default("deepseek-chat"),
+    z.string().min(1).default("deepseek-v4-flash"),
   ),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20).optional().or(z.literal("")),
   ADMIN_EMAIL: z.string().email().optional().or(z.literal("")),

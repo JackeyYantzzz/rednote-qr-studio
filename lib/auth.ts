@@ -13,7 +13,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
   const env = getServerEnv();
   const supabase = await createAuthenticatedSupabaseClient();
   const allowedEmails = [
-    env.ADMIN_EMAIL,
+    ...(env.ADMIN_EMAIL ? [env.ADMIN_EMAIL] : []),
     ...(env.ADMIN_EMAILS || "").split(","),
   ]
     .map((email) => email.trim().toLowerCase())

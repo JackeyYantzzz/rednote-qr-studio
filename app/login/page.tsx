@@ -46,7 +46,7 @@ export default function LoginPage() {
           </div>
           <h1 className="mt-6 text-3xl font-black">管理员登录</h1>
           <p className="mt-2 leading-7 text-[#746d65]">
-            使用与环境变量 ADMIN_EMAIL 一致的邮箱接收安全登录链接。
+            使用 ADMIN_EMAIL 或 ADMIN_EMAILS 白名单中的邮箱接收安全登录链接。
           </p>
           <form className="mt-7" onSubmit={submit}>
             <label className="field-label" htmlFor="email">

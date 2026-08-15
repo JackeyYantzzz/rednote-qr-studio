@@ -1,6 +1,7 @@
 import { generateRequestSchema } from "@/lib/schemas";
 import { checkRateLimit, requestKey } from "@/lib/rate-limit";
 import { generatePostWithAI } from "@/lib/server/deepseek";
+import { reserveGlobalGeneration } from "@/lib/server/generation-quota";
 import {
   getAssetsByIds,
   getCampaignBySlug,
@@ -38,6 +39,22 @@ export async function POST(request: Request) {
       return jsonError("部分图片不存在、已停用或不属于此 Campaign。", 400);
     }
 
+    const quota = await reserveGlobalGeneration();
+    if (!quota.allowed) {
+      return Response.json(
+        {
+          error: "全站生成额度已用完，请联系管理员重置。",
+          code: "GLOBAL_GENERATION_LIMIT",
+          quota: {
+            usedCount: quota.usedCount,
+            limitCount: quota.limitCount,
+            remaining: quota.remaining,
+          },
+        },
+        { status: 429 },
+      );
+    }
+
     const post = await generatePostWithAI(campaign, assets, input);
     const generation = await saveGeneration({
       campaignId: campaign.id,
@@ -45,7 +62,15 @@ export async function POST(request: Request) {
       userInput: input,
       generatedContent: post,
     });
-    return Response.json({ generationId: generation.id, ...post });
+    return Response.json({
+      generationId: generation.id,
+      ...post,
+      quota: {
+        usedCount: quota.usedCount,
+        limitCount: quota.limitCount,
+        remaining: quota.remaining,
+      },
+    });
   } catch (error) {
     if (error && typeof error === "object" && "issues" in error) {
       return jsonError("输入内容不符合要求。", 400, (error as { issues: unknown }).issues);

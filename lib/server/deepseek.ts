@@ -81,6 +81,8 @@ export async function generatePostWithAI(
       },
       { role: "user", content: buildPrompt(campaign, assets, input) },
     ],
+  }, {
+    body: { thinking: { type: "disabled" } },
   });
 
   const content = response.choices[0]?.message.content?.trim();

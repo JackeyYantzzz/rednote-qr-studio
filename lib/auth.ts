@@ -12,10 +12,17 @@ export async function getAdminUser(): Promise<AdminUser | null> {
 
   const env = getServerEnv();
   const supabase = await createAuthenticatedSupabaseClient();
-  if (!supabase || !env.ADMIN_EMAIL) return null;
+  const allowedEmails = [
+    ...(env.ADMIN_EMAIL ? [env.ADMIN_EMAIL] : []),
+    ...(env.ADMIN_EMAILS || "").split(","),
+  ]
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+  if (!supabase || allowedEmails.length === 0) return null;
+
   const { data, error } = await supabase.auth.getUser();
   const email = data.user?.email?.toLowerCase();
-  if (error || !email || email !== env.ADMIN_EMAIL.toLowerCase()) return null;
+  if (error || !email || !allowedEmails.includes(email)) return null;
   return { email, demo: false };
 }
 

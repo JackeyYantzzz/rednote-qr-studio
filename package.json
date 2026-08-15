@@ -12,6 +12,7 @@
     "start": "vinext start",
     "typecheck": "tsc --noEmit",
     "test": "vitest --config vitest.config.ts --configLoader runner run",
+    "test:quota-live": "tsx scripts/test-generation-quota-live.ts",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern coverage",
     "phone": "powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/start-phone-preview.ps1",
     "worker": "tsx worker/index.ts",

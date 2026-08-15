@@ -19,6 +19,7 @@ const serverEnvSchema = publicEnvSchema.extend({
   ),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20).optional().or(z.literal("")),
   ADMIN_EMAIL: z.string().email().optional().or(z.literal("")),
+  ADMIN_EMAILS: z.string().optional().or(z.literal("")),
   DEMO_MODE: z.preprocess(blankAsUndefined, z.enum(["true", "false"]).default("false")),
 });
 

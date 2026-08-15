@@ -119,3 +119,14 @@ export interface FastPublishAnalytics {
   share_cancelled: number;
   share_failed: number;
 }
+
+export interface GenerationQuotaStatus {
+  allowed: boolean;
+  usedCount: number;
+  limitCount: number;
+  remaining: number;
+  locked: boolean;
+  updatedAt: string;
+  lastResetAt?: string | null;
+  lastResetBy?: string | null;
+}

@@ -66,9 +66,8 @@ export async function generatePostWithAI(
     apiKey: env.DEEPSEEK_API_KEY,
     baseURL: "https://api.deepseek.com",
   });
-  const response = await deepseek.chat.completions.create({
+  const requestBody = {
     model: env.DEEPSEEK_MODEL,
-    // @ts-expect-error DeepSeek-specific OpenAI-compatible request parameter.
     thinking: { type: "disabled" },
     store: false,
     stream: false,
@@ -83,7 +82,10 @@ export async function generatePostWithAI(
       },
       { role: "user", content: buildPrompt(campaign, assets, input) },
     ],
-  });
+  } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming & {
+    thinking: { type: "disabled" };
+  };
+  const response = await deepseek.chat.completions.create(requestBody);
 
   const content = response.choices[0]?.message.content?.trim();
   if (!content) {

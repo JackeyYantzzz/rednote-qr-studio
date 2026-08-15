@@ -3,6 +3,7 @@ import {
   BarChart3,
   BriefcaseBusiness,
   GalleryHorizontalEnd,
+  Gauge,
   LayoutDashboard,
   Plus,
   Zap,
@@ -14,6 +15,7 @@ const nav = [
   { href: "/admin", label: "总览", icon: LayoutDashboard },
   { href: "/admin/campaigns", label: "Campaign", icon: GalleryHorizontalEnd },
   { href: "/admin/generations", label: "生成记录", icon: BarChart3 },
+  { href: "/admin/quota", label: "生成额度", icon: Gauge },
   { href: "/admin/fast-publish", label: "快发数据", icon: Zap },
   { href: "/admin/publish-jobs", label: "发布任务", icon: BriefcaseBusiness },
 ];
